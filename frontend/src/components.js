@@ -353,7 +353,12 @@ const CourseCard = ({ course }) => {
 
 // Dashboard Component
 export const Dashboard = () => {
-  const { courses } = useContext(CourseContext);
+  const { courses, progress } = useContext(CourseContext);
+  
+  // Calculate total completed videos
+  const totalCompletedVideos = Object.values(progress).reduce((total, courseProgress) => {
+    return total + Object.values(courseProgress).filter(Boolean).length;
+  }, 0);
   
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -397,11 +402,7 @@ export const Dashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm text-gray-600">Completed Videos</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Object.values(JSON.parse(localStorage.getItem('courseProgress') || '{}')).reduce((total, course) => {
-                  return total + Object.values(course).filter(Boolean).length;
-                }, 0)}
-              </p>
+              <p className="text-2xl font-bold text-gray-900">{totalCompletedVideos}</p>
             </div>
           </div>
         </div>
