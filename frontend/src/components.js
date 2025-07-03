@@ -140,54 +140,146 @@ export const CourseProvider = ({ children }) => {
   );
 };
 
+// Sign In Modal Component
+const SignInModal = ({ isOpen, onClose }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Mock sign in functionality
+    alert(`Sign in attempted with email: ${email}`);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Sign In</h2>
+          <button 
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          
+          <button
+            type="submit"
+            className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          >
+            Sign In
+          </button>
+        </form>
+        
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account? 
+            <a href="#" className="text-purple-600 hover:text-purple-700 font-medium ml-1">
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Header Component
 export const Header = () => {
   const navigate = useNavigate();
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <div className="text-2xl font-bold text-purple-600">
-                <span className="text-purple-800">Biz</span>
-                <span className="text-purple-600">Coach</span>
-              </div>
-            </Link>
-          </div>
-          
-          <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium">
-              My Courses
-            </Link>
-            <span className="text-gray-700 px-3 py-2 text-sm font-medium">
-              Browse
-            </span>
-            <span className="text-gray-700 px-3 py-2 text-sm font-medium">
-              Teach
-            </span>
-          </nav>
-
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search for courses..."
-                className="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <svg className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+    <>
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  <span className="text-purple-800">Biz</span>
+                  <span className="text-purple-600">Coach</span>
+                </div>
+              </Link>
             </div>
             
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-              Sign In
-            </button>
+            <nav className="hidden md:flex space-x-8">
+              <Link to="/" className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium transition-colors">
+                My Courses
+              </Link>
+              <span className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                Browse
+              </span>
+              <span className="text-gray-700 hover:text-purple-600 px-3 py-2 text-sm font-medium cursor-pointer transition-colors">
+                Teach
+              </span>
+            </nav>
+
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search for courses..."
+                  className="w-64 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <svg className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              
+              <button 
+                onClick={() => setIsSignInModalOpen(true)}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Sign In
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+      
+      <SignInModal 
+        isOpen={isSignInModalOpen} 
+        onClose={() => setIsSignInModalOpen(false)} 
+      />
+    </>
   );
 };
 
