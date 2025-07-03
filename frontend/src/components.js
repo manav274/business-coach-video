@@ -377,7 +377,14 @@ const YouTubePlayer = ({ videoId, onVideoEnd }) => {
     } else {
       initializePlayer();
     }
-  }, [videoId]);
+  }, []);
+
+  useEffect(() => {
+    // Update video when videoId changes
+    if (player && videoId) {
+      player.loadVideoById(videoId);
+    }
+  }, [videoId, player]);
 
   const initializePlayer = () => {
     const newPlayer = new window.YT.Player('youtube-player', {
