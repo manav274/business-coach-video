@@ -452,77 +452,22 @@ export const Dashboard = () => {
   );
 };
 
-// YouTube Player Component
-const YouTubePlayer = ({ videoId, onVideoEnd }) => {
-  const [player, setPlayer] = useState(null);
-  const [isReady, setIsReady] = useState(false);
-  
-  useEffect(() => {
-    // Load YouTube IFrame API
-    if (!window.YT) {
-      const script = document.createElement('script');
-      script.src = 'https://www.youtube.com/iframe_api';
-      script.async = true;
-      document.body.appendChild(script);
-      
-      window.onYouTubeIframeAPIReady = () => {
-        initializePlayer();
-      };
-    } else {
-      initializePlayer();
-    }
-  }, []);
-
-  useEffect(() => {
-    // Update video when videoId changes
-    if (player && isReady && videoId) {
-      player.loadVideoById(videoId);
-    }
-  }, [videoId, player, isReady]);
-
-  const initializePlayer = () => {
-    // Remove existing player if any
-    const existingPlayer = document.getElementById('youtube-player');
-    if (existingPlayer) {
-      existingPlayer.innerHTML = '';
-    }
-
-    const newPlayer = new window.YT.Player('youtube-player', {
-      height: '400',
-      width: '100%',
-      videoId: videoId,
-      playerVars: {
-        rel: 0,
-        modestbranding: 1,
-        showinfo: 0,
-        autoplay: 0
-      },
-      events: {
-        onReady: (event) => {
-          setIsReady(true);
-        },
-        onStateChange: (event) => {
-          if (event.data === window.YT.PlayerState.ENDED) {
-            onVideoEnd();
-          }
-        }
-      }
-    });
-    setPlayer(newPlayer);
-  };
-
-  return (
-    <div className="w-full">
-      <div id="youtube-player" className="w-full"></div>
-    </div>
-  );
-};
-
 // Video Player Component
 const VideoPlayer = ({ video, onVideoEnd }) => {
   return (
     <div className="bg-black rounded-lg overflow-hidden">
-      <YouTubePlayer videoId={video.videoId} onVideoEnd={onVideoEnd} />
+      <div className="w-full h-96">
+        <iframe
+          width="100%"
+          height="100%"
+          src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1&showinfo=0`}
+          title={video.title}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        ></iframe>
+      </div>
     </div>
   );
 };
