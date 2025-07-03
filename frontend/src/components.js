@@ -239,7 +239,7 @@ const CourseCard = ({ course }) => {
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              className="bg-purple-600 h-2 rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
@@ -251,7 +251,7 @@ const CourseCard = ({ course }) => {
             to={`/course/${course.id}`}
             className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
           >
-            Continue Learning
+            {progressPercentage > 0 ? 'Continue Learning' : 'Start Learning'}
           </Link>
         </div>
       </div>
