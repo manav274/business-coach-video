@@ -428,8 +428,19 @@ export const CourseDetails = () => {
   const { courseId } = useParams();
   const { courses, updateProgress, getCourseProgress, getVideoProgress } = useContext(CourseContext);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
   
   const course = courses.find(c => c.id === parseInt(courseId));
+  
+  // Initialize with the first uncompleted video or first video
+  useEffect(() => {
+    if (course) {
+      const firstUncompletedIndex = course.videos.findIndex(video => 
+        !getVideoProgress(course.id, video.id)
+      );
+      setCurrentVideoIndex(firstUncompletedIndex !== -1 ? firstUncompletedIndex : 0);
+    }
+  }, [course, getVideoProgress]);
   
   if (!course) {
     return <div className="text-center py-12">Course not found</div>;
@@ -437,8 +448,17 @@ export const CourseDetails = () => {
 
   const currentVideo = course.videos[currentVideoIndex];
   const progressPercentage = getCourseProgress(course.id);
+  const isCurrentVideoCompleted = getVideoProgress(course.id, currentVideo.id);
 
   const handleVideoEnd = () => {
+    updateProgress(course.id, currentVideo.id);
+    // Auto-advance to next video if available
+    if (currentVideoIndex < course.videos.length - 1) {
+      setCurrentVideoIndex(currentVideoIndex + 1);
+    }
+  };
+
+  const handleMarkAsComplete = () => {
     updateProgress(course.id, currentVideo.id);
   };
 
@@ -509,14 +529,18 @@ export const CourseDetails = () => {
               <h2 className="text-xl font-semibold text-white mb-4">
                 {currentVideo.title}
               </h2>
-              <VideoPlayer video={currentVideo} onVideoEnd={handleVideoEnd} />
+              <VideoPlayer 
+                video={currentVideo} 
+                onVideoEnd={handleVideoEnd}
+                key={currentVideo.id} // Force re-render when video changes
+              />
               
               {/* Video Controls */}
               <div className="flex justify-between items-center mt-4">
                 <button
                   onClick={handlePrevVideo}
                   disabled={currentVideoIndex === 0}
-                  className="flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -525,16 +549,30 @@ export const CourseDetails = () => {
                 </button>
                 
                 <button
-                  onClick={() => handleVideoEnd()}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                  onClick={handleMarkAsComplete}
+                  disabled={isCurrentVideoCompleted}
+                  className={`px-4 py-2 rounded-lg transition-colors ${
+                    isCurrentVideoCompleted 
+                      ? 'bg-green-600 text-white cursor-not-allowed' 
+                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                  }`}
                 >
-                  Mark as Complete
+                  {isCurrentVideoCompleted ? (
+                    <>
+                      <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Completed
+                    </>
+                  ) : (
+                    'Mark as Complete'
+                  )}
                 </button>
                 
                 <button
                   onClick={handleNextVideo}
                   disabled={currentVideoIndex === course.videos.length - 1}
-                  className="flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   Next
                   <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
