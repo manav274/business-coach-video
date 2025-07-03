@@ -362,6 +362,7 @@ export const Dashboard = () => {
 // YouTube Player Component
 const YouTubePlayer = ({ videoId, onVideoEnd }) => {
   const [player, setPlayer] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   
   useEffect(() => {
     // Load YouTube IFrame API
@@ -381,12 +382,18 @@ const YouTubePlayer = ({ videoId, onVideoEnd }) => {
 
   useEffect(() => {
     // Update video when videoId changes
-    if (player && videoId) {
+    if (player && isReady && videoId) {
       player.loadVideoById(videoId);
     }
-  }, [videoId, player]);
+  }, [videoId, player, isReady]);
 
   const initializePlayer = () => {
+    // Remove existing player if any
+    const existingPlayer = document.getElementById('youtube-player');
+    if (existingPlayer) {
+      existingPlayer.innerHTML = '';
+    }
+
     const newPlayer = new window.YT.Player('youtube-player', {
       height: '400',
       width: '100%',
@@ -394,9 +401,13 @@ const YouTubePlayer = ({ videoId, onVideoEnd }) => {
       playerVars: {
         rel: 0,
         modestbranding: 1,
-        showinfo: 0
+        showinfo: 0,
+        autoplay: 0
       },
       events: {
+        onReady: (event) => {
+          setIsReady(true);
+        },
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.ENDED) {
             onVideoEnd();
@@ -409,7 +420,7 @@ const YouTubePlayer = ({ videoId, onVideoEnd }) => {
 
   return (
     <div className="w-full">
-      <div id="youtube-player"></div>
+      <div id="youtube-player" className="w-full"></div>
     </div>
   );
 };
